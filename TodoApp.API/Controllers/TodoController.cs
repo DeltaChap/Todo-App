@@ -48,9 +48,8 @@ namespace TodoApp.API.Controllers
             var todo = await _todoDbContext.Todos.FindAsync(id);
 
             if(todo == null)
-            {
                 return NotFound();
-            }
+            
 
             todo.IsCompleted = todoUpdateRequest.IsCompleted;
             todo.CompletedDate = DateTime.Now;
