@@ -62,6 +62,23 @@ namespace TodoApp.API.Controllers
             return Ok(todo);
         }
 
+        [HttpPut]
+        [Route("undo-deleted-todo/{id:Guid}")]
+        public async Task<IActionResult> UndoDeletedTodo([FromRoute] Guid id, Todo undoDeleteTodoRequest)
+        {
+            var todo = await _todoDbContext.Todos.FindAsync(id);
+
+            if (todo == null)
+                return NotFound();
+
+            todo.DeletedDate = null;
+            todo.isDeleted = false;
+
+            await _todoDbContext.SaveChangesAsync();
+
+            return Ok(todo);
+        }
+
         [HttpDelete]
         [Route("{id:Guid}")]
         public async Task<IActionResult> DeleteTodo([FromRoute] Guid id)
@@ -77,6 +94,18 @@ namespace TodoApp.API.Controllers
             await _todoDbContext.SaveChangesAsync();
 
             return Ok(todo);
+        }
+
+        [HttpGet]
+        [Route("get-deleted-todos")]
+        public async Task<IActionResult> GetAllDeletedTodos()
+        {
+            var deletedTodos = await _todoDbContext.Todos
+                .Where(x => x.isDeleted == true)
+                .OrderByDescending(x => x.CreatedDate)
+                .ToListAsync();
+
+            return Ok(deletedTodos);
         }
 
     }
