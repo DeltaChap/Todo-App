@@ -8,6 +8,8 @@ namespace TodoApp.API.Models
 		public DateTime CreatedDate { get; set; }
 		public bool IsCompleted { get; set; }
 		public DateTime? CompletedDate { get; set; }
+		public bool isDeleted { get; set; }
+		public DateTime? DeletedDate { get; set; }
 		
 	}
 }

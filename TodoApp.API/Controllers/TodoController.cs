@@ -25,7 +25,10 @@ namespace TodoApp.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllTodos()
         {
-            var todos = await _todoDbContext.Todos.ToListAsync();
+            var todos = await _todoDbContext.Todos
+                .Where(x => x.isDeleted == false)
+                .OrderByDescending(x => x.CreatedDate)
+                .ToListAsync();
 
             return Ok(todos);
         }
@@ -58,6 +61,24 @@ namespace TodoApp.API.Controllers
 
             return Ok(todo);
         }
+
+        [HttpDelete]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> DeleteTodo([FromRoute] Guid id)
+        {
+            var todo = await _todoDbContext.Todos.FindAsync(id);
+
+            if (todo == null)
+                return NotFound();
+
+            todo.isDeleted = true;
+            todo.DeletedDate = DateTime.Now;
+
+            await _todoDbContext.SaveChangesAsync();
+
+            return Ok(todo);
+        }
+
     }
 }
 
